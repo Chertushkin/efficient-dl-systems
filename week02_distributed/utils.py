@@ -4,6 +4,7 @@
 import numpy as np
 from random import randrange
 
+a = 5
 def eval_numerical_gradient(f, x, verbose=False, h=0.00001):
     """Evaluates gradient df/dx via finite differences:
     df/dx ~ (f(x+h) - f(x-h)) / 2h
