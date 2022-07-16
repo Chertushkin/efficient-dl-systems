@@ -1,5 +1,5 @@
 # Efficient Deep Learning Systems
-This repository contains materials for the Efficient Deep Learning Systems course taught at the Faculty of Computer Science of HSE University and Yandex School of Data Analysis.
+This repository contains materials for the Efficient Deep Learning Systems course taught at the [Faculty of Computer Science](https://cs.hse.ru/en/) of [HSE University](https://www.hse.ru/en/) and [Yandex School of Data Analysis](https://academy.yandex.com/dataschool/).
 
 # Syllabus
 - [__Week 1:__](./week01_intro) __Introduction__
@@ -21,12 +21,18 @@ This repository contains materials for the Efficient Deep Learning Systems cours
   - Lecture/Seminar: Building and deployment of production-ready web services. App & web servers, Docker containers, Prometheus metrics, API via HTTP and gRPC.
 - [__Week 7:__](./week07_inference_software) __Software for serving neural networks__
   - Lecture/Seminar: Different formats for packing NN: ONNX, TorchScript, IR. Inference servers: OpenVINO, Triton. ML on client devices: TfJS, ML Kit, Core ML.
-- __Week 8:__ Optimizing models for faster inference
-- __Week 9:__ Experiment tracking, model and data versioning
-- __Week 10:__ Testing, debugging and monitoring of models
+- [__Week 8:__](./week08_compress_models) __Optimizing models for faster inference__
+  - Lecture: Knowlenge distillation, Pruning, Quantization, NAS, Efficient Architectures
+  - Seminar: Quantization and distillation of Transformers
+- [__Week 9:__](./week09_experiment_tracking) __Experiment tracking, model and data versioning, testing DL code in Python__
+  - Lecture: Experiment management basics and pipeline versioning. Configuring Python applications. Intro to regular and property-based testing.
+  - Seminar: Example DVC+W&B project walkthrough. Intro to testing with pytest.
+- [__Week 10:__](./week10_invited_talks) __Invited talks__
+  - [Memory Footprint Reduction Techniques for DNN Training: An Overview](./week10_invited_talks/memory_footprint_reduction.pdf). [Gennady Pekhimenko](http://www.cs.toronto.edu/~pekhimenko/), University of Toronto, Vector Institute
+  - Efficient Inference of Deep Learning Models on (GP)GPU. Ivan Komarov, Yandex
 
 ## Grading
-There will be a total of 4 home assignments (some of them spread over several weeks). 
+There will be a total of 3 home assignments (some of them spread over several weeks). 
 The final grade is a weighted sum of per-assignment grades. 
 Please refer to the course page of your institution for details.
 
