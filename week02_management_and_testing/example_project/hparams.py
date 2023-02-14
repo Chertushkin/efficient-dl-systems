@@ -1,5 +1,5 @@
 config = dict(
-    batch_size=64,
+    batch_size=256,
     learning_rate=1e-5,
     weight_decay=0.01,
     epochs=2,

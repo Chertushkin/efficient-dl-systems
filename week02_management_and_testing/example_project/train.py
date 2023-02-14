@@ -11,7 +11,7 @@ from hparams import config
 wandb.init(config=config, project="effdl_example", name="baseline")
 
 def compute_accuracy(preds, targets):
-    result = (targets == preds).float().sum()
+    result = (targets == preds).float().mean()
     return result
 
 

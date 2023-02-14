@@ -1,0 +1,47 @@
+schema: '2.0'
+stages:
+  prepare_data:
+    cmd: python prepare_data.py
+    deps:
+    - path: prepare_data.py
+      md5: ddd4f8fa912787a4623eed234ff3021b
+      size: 187
+    outs:
+    - path: CIFAR10
+      md5: bc9a34f7def12ea37410b111a47882ce.dir
+      size: 713424370
+      nfiles: 18
+  train:
+    cmd: python train.py
+    deps:
+    - path: CIFAR10
+      md5: bc9a34f7def12ea37410b111a47882ce.dir
+      size: 713424370
+      nfiles: 18
+    - path: hparams.py
+      md5: 31d69c6462e04ec45f8647cb26094258
+      size: 128
+    - path: train.py
+      md5: c0ce04ecd77bf1e3e4e250494c831bb4
+      size: 3057
+    outs:
+    - path: model.pt
+      md5: 5cbb5b3d99c698276babcf8290e1a39b
+      size: 44798229
+  compute_metrics:
+    cmd: python compute_metrics.py
+    deps:
+    - path: CIFAR10
+      md5: bc9a34f7def12ea37410b111a47882ce.dir
+      size: 713424370
+      nfiles: 18
+    - path: compute_metrics.py
+      md5: 442122cd957fbdbf0b4f46e9f15571ff
+      size: 1518
+    - path: model.pt
+      md5: 5cbb5b3d99c698276babcf8290e1a39b
+      size: 44798229
+    outs:
+    - path: final_metrics.json
+      md5: dce69c19b48ab231b156caf6ce63e338
+      size: 35
