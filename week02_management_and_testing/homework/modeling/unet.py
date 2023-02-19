@@ -49,6 +49,7 @@ class UpBlock(nn.Module):
         )
 
     def forward(self, x: torch.Tensor, skip: torch.Tensor) -> torch.Tensor:
+        print(x.shape, skip.shape)
         x = torch.cat((x, skip), 1)
         x = self.layers(x)
 
