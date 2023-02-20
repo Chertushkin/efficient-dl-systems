@@ -1,5 +1,9 @@
 week02_management_and_testing/homework/tests/data/
 week03_fast_pipelines/seminar/mnist/
+week03_fast_pipelines/homework/section1/__MACOSX
+week03_fast_pipelines/homework/section1/train/
+week03_fast_pipelines/homework/section1/train_masks/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
