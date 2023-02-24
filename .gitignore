@@ -3,7 +3,8 @@ week03_fast_pipelines/seminar/mnist/
 week03_fast_pipelines/homework/section1/__MACOSX
 week03_fast_pipelines/homework/section1/train/
 week03_fast_pipelines/homework/section1/train_masks/
-
+week03_fast_pipelines/homework/section2/wikitext-103-v1.zip
+week03_fast_pipelines/homework/section2/wikitext-103/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

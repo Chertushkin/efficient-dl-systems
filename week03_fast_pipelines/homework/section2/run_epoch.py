@@ -1,5 +1,5 @@
 from enum import Enum
-
+from dataset import BrainDataset
 import torch
 
 
@@ -14,4 +14,10 @@ def get_gpt2_model() -> torch.nn.Module:
 
 
 def run_epoch(data_mode: DataMode) -> None:
-    pass
+    df = None
+    if data_mode == DataMode.BRAIN:
+        ds = BrainDataset("wikitext-103/wiki.test.tokens")
+    else:
+        raise ValueError("Not implemented")
+        
+run_epoch(DataMode.BRAIN)
