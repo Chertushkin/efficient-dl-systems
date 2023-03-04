@@ -5,6 +5,7 @@ week03_fast_pipelines/homework/section1/train/
 week03_fast_pipelines/homework/section1/train_masks/
 week03_fast_pipelines/homework/section2/wikitext-103-v1.zip
 week03_fast_pipelines/homework/section2/wikitext-103/
+week03_fast_pipelines/homework/section3/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -9,6 +9,7 @@ from tqdm.notebook import tqdm
 import dataset
 from utils import Settings
 from vit import ViT as SubOptimalViT
+from torch.profiler import profile, record_function, ProfilerActivity
 
 
 def get_vit_model() -> torch.nn.Module:
@@ -30,26 +31,33 @@ def get_train_loader() -> torch.utils.data.DataLoader:
     print(f"Train Data: {len(train_list)}")
     train_transforms = dataset.get_train_transforms()
     train_data = dataset.CatsDogsDataset(train_list, transform=train_transforms)
-    train_loader = DataLoader(dataset=train_data, batch_size=Settings.batch_size, shuffle=True)
+    train_loader = DataLoader(dataset=train_data, batch_size=Settings.batch_size, shuffle=True, num_workers=6)
 
     return train_loader
 
 
 def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
     epoch_loss, epoch_accuracy = 0, 0
-    for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
-        data = data.to(Settings.device)
-        label = label.to(Settings.device)
-        output = model(data)
-        loss = criterion(output, label)
+    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True) as prof:
+    #     with record_function("model_training"):
+    #         for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
+    #             data = data.to(Settings.device)
+    #             label = label.to(Settings.device)
+    #             output = model(data)
+    #             loss = criterion(output, label)
 
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+    #             optimizer.zero_grad()
+    #             loss.backward()
+    #             optimizer.step()
 
-        acc = (output.argmax(dim=1) == label).float().mean()
-        epoch_accuracy += acc / len(train_loader)
-        epoch_loss += loss / len(train_loader)
+    #             acc = (output.argmax(dim=1) == label).float().mean()
+    #             epoch_accuracy += acc / len(train_loader)
+    #             epoch_loss += loss / len(train_loader)
+
+    #             if i >= 2:
+    #                 break
+    # print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
+
     return epoch_loss, epoch_accuracy
 
 

@@ -16,7 +16,9 @@ def seed_everything(seed: int = 595959) -> None:
 
 
 def get_device() -> torch.device:
-    return torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+    device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+    print(device)
+    return device
 
 
 class Settings:
@@ -29,7 +31,7 @@ class Settings:
 
 
 class CatsAndDogs:
-    directory = "data"
-    train_dir = "data/train"
-    test_dir = "data/test"
+    directory = "/home/misha/Coursera/efficient-dl-systems-2022/week03_fast_pipelines/homework/section3/data"
+    train_dir = "/home/misha/Coursera/efficient-dl-systems-2022/week03_fast_pipelines/homework/section3/data/train"
+    test_dir = "/home/misha/Coursera/efficient-dl-systems-2022/week03_fast_pipelines/homework/section3/data/test"
     regexp = "*.jpg"
