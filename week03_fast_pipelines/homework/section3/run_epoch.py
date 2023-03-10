@@ -9,7 +9,7 @@ from timeit import default_timer
 
 import dataset
 from utils import Settings
-from vit import ViT as SubOptimalViT
+from vit_old import ViT as SubOptimalViT
 from torch.profiler import profile, record_function, ProfilerActivity
 
 
