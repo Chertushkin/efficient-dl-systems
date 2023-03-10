@@ -9,7 +9,7 @@ from timeit import default_timer
 
 import dataset
 from utils import Settings
-from vit import ViT as SubOptimalViT
+from vit_old import ViT as SubOptimalViT
 from torch.profiler import profile, record_function, ProfilerActivity
 
 EPOCHS = 5
@@ -77,7 +77,7 @@ def run_epoch_tb(model, train_loader, criterion, optimizer) -> tp.Tuple[float, f
 
     with torch.profiler.profile(
         schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
-        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/vit_new_2"),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/vit_old_final"),
         record_shapes=True,
         profile_memory=True,
         with_stack=True,
@@ -110,8 +110,8 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Settings.lr)
     start = default_timer()
-    for epoch in range(EPOCHS):
-        epoch_loss, epoch_accuracy = run_epoch(model, train_loader, criterion, optimizer)
+    # for epoch in range(EPOCHS):
+    epoch_loss, epoch_accuracy = run_epoch_tb(model, train_loader, criterion, optimizer)
     end = default_timer()
     print(f"Took {end - start} seconds...")
     print(f"{epoch_loss = }, {epoch_accuracy = }")
