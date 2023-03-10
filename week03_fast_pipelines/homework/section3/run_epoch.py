@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
+from timeit import default_timer
 
 import dataset
 from utils import Settings
@@ -36,30 +37,30 @@ def get_train_loader() -> torch.utils.data.DataLoader:
     return train_loader
 
 
-# def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
-#     epoch_loss, epoch_accuracy = 0, 0
-#     with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True) as prof:
-#         with record_function("model_training"):
-#             for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
-#                 data = data.to(Settings.device)
-#                 label = label.to(Settings.device)
-#                 output = model(data)
-#                 loss = criterion(output, label)
+def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
+    epoch_loss, epoch_accuracy = 0, 0
+    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True) as prof:
+    #     with record_function("model_training"):
+    for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
+        data = data.to(Settings.device)
+        label = label.to(Settings.device)
+        output = model(data)
+        loss = criterion(output, label)
 
-#                 optimizer.zero_grad()
-#                 loss.backward()
-#                 optimizer.step()
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-#                 acc = (output.argmax(dim=1) == label).float().mean()
-#                 # print(acc)
-#                 epoch_accuracy += acc / len(train_loader)
-#                 epoch_loss += loss / len(train_loader)
-#                 if i>=2: 
-#                     break
+        acc = (output.argmax(dim=1) == label).float().mean()
+        # print(acc)
+        epoch_accuracy += acc / len(train_loader)
+        epoch_loss += loss / len(train_loader)
+        # if i>=2: 
+        #     break
 
-#     print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
+    # print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
 
-#     return epoch_loss, epoch_accuracy
+    return epoch_loss, epoch_accuracy
 
 
 def run_epoch_tb(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
@@ -98,9 +99,11 @@ def main():
     train_loader = get_train_loader()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Settings.lr)
-
-    run_epoch_tb(model, train_loader, criterion, optimizer)
-
+    start = default_timer()
+    epoch_loss, epoch_accuracy = run_epoch(model, train_loader, criterion, optimizer)
+    end = default_timer()
+    print(f'Took {end - start} seconds...')
+    print(f'{epoch_loss = }, {epoch_accuracy = }')
 
 if __name__ == "__main__":
     main()
