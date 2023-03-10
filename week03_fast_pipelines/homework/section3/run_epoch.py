@@ -36,30 +36,62 @@ def get_train_loader() -> torch.utils.data.DataLoader:
     return train_loader
 
 
-def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
+# def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
+#     epoch_loss, epoch_accuracy = 0, 0
+#     with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True) as prof:
+#         with record_function("model_training"):
+#             for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
+#                 data = data.to(Settings.device)
+#                 label = label.to(Settings.device)
+#                 output = model(data)
+#                 loss = criterion(output, label)
+
+#                 optimizer.zero_grad()
+#                 loss.backward()
+#                 optimizer.step()
+
+#                 acc = (output.argmax(dim=1) == label).float().mean()
+#                 # print(acc)
+#                 epoch_accuracy += acc / len(train_loader)
+#                 epoch_loss += loss / len(train_loader)
+#                 if i>=2: 
+#                     break
+
+#     print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
+
+#     return epoch_loss, epoch_accuracy
+
+
+def run_epoch_tb(model, train_loader, criterion, optimizer) -> tp.Tuple[float, float]:
     epoch_loss, epoch_accuracy = 0, 0
-    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True) as prof:
-    #     with record_function("model_training"):
-    #         for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
-    #             data = data.to(Settings.device)
-    #             label = label.to(Settings.device)
-    #             output = model(data)
-    #             loss = criterion(output, label)
 
-    #             optimizer.zero_grad()
-    #             loss.backward()
-    #             optimizer.step()
+    with torch.profiler.profile(
+        schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/vit_pos_2"),
+        record_shapes=True,
+        profile_memory=True,
+        with_stack=True,
+    ) as prof:
+        for i, (data, label) in tqdm(enumerate(train_loader), desc=f"[Train]"):
+            if i >= (1 + 1 + 3) * 2:
+                break
 
-    #             acc = (output.argmax(dim=1) == label).float().mean()
-    #             epoch_accuracy += acc / len(train_loader)
-    #             epoch_loss += loss / len(train_loader)
+            data = data.to(Settings.device)
+            label = label.to(Settings.device)
+            output = model(data)
+            loss = criterion(output, label)
 
-    #             if i >= 2:
-    #                 break
-    # print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            acc = (output.argmax(dim=1) == label).float().mean()
+            # print(acc)
+            epoch_accuracy += acc / len(train_loader)
+            epoch_loss += loss / len(train_loader)
+            prof.step()  # Need to call this at the end of each step to notify profiler of steps' boundary.
 
     return epoch_loss, epoch_accuracy
-
 
 def main():
     model = get_vit_model()
@@ -67,7 +99,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Settings.lr)
 
-    run_epoch(model, train_loader, criterion, optimizer)
+    run_epoch_tb(model, train_loader, criterion, optimizer)
 
 
 if __name__ == "__main__":

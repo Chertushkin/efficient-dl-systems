@@ -17,29 +17,27 @@ def pair(t):
 class PreNorm(nn.Module):
     def __init__(self, dim, fn):
         super().__init__()
-        self.norm = nn.BatchNorm1d(dim)
+        self.norm = nn.LayerNorm(dim)
+        # self.norm = nn.BatchNorm1d(dim)
         self.fn = fn
 
     def forward(self, x, **kwargs):
-        # (づ ◕‿◕ )づ
-        x = rearrange(x, "b l c -> b c l")
-        # x = x.permute(0, 2, 1)
+        # (づ ◕‿◕ )づ (done)
+        # x = rearrange(x, "b l c -> b c l")
         x = self.norm(x)
-        x = rearrange(x, "b c l -> b l c")
-        # x = x.permute(0, 2, 1)
+        # x = rearrange(x, "b c l -> b l c")
         return self.fn(x, **kwargs)
 
 
 class FeedForward(nn.Module):
     def __init__(self, dim, hidden_dim, dropout=0.0):
         super().__init__()
-        # ╭( -᷅_-᷄ 〝)╮
+        # ╭( -᷅_-᷄ 〝)╮ (done)
         self.net = nn.Sequential(
             nn.Linear(dim, hidden_dim, bias=True),
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(hidden_dim, dim, bias=True),
-            nn.Dropout(dropout),
         )
 
     def forward(self, x):
@@ -58,20 +56,27 @@ class Attention(nn.Module):
         self.attend = nn.Softmax(dim=-1)
         self.dropout = nn.Dropout(dropout)
 
-        # ˁ ुᴗ_ᴗ)ु.｡oO
-        self.queries = nn.Linear(dim, inner_dim, bias=False)
-        self.keys = nn.Linear(dim, inner_dim, bias=False)
-        self.values = nn.Linear(dim, inner_dim, bias=False)
+        # ˁ ुᴗ_ᴗ)ु.｡oO (done)
+        self.qkv = nn.Linear(dim, inner_dim * 3)
+        # self.queries = nn.Linear(dim, inner_dim, bias=False)
+        # self.keys = nn.Linear(dim, inner_dim, bias=False)
+        # self.values = nn.Linear(dim, inner_dim, bias=False)
 
         self.to_out = nn.Sequential(nn.Linear(inner_dim, dim), nn.Dropout(dropout)) if project_out else nn.Identity()
 
     def forward(self, x):
-        q = self.queries(x)
-        k = self.keys(x)
-        v = self.values(x)
+        # q = self.queries(x)
+        # k = self.keys(x)
+        # v = self.values(x)
 
-        # 〈╭☞• ⍛•〉╭☞
-        dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
+        qkv = self.qkv(x)
+        last_dim = qkv.shape[-1]
+        # qkv = rearrange(self.qkv(x), "b n (h d qkv) -> (qkv) b h n d", h=self.heads, qkv=3)
+        q, k, v = qkv[..., :last_dim//3], qkv[..., last_dim//3:last_dim*2//3], qkv[..., last_dim*2//3:]
+
+        # 〈╭☞• ⍛•〉╭☞ (done)
+        dots = torch.bmm(q, k.transpose(1, 2)) * self.scale
+        # dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
 
         attn = self.attend(dots)
         attn = self.dropout(attn)
@@ -136,8 +141,13 @@ class ViT(nn.Module):
             nn.Linear(patch_dim, dim),
         )
 
-        # ヾ( • – •*)〴
+        # ヾ( • – •*)〴 (done)
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, dim))
+        # print(self.pos_embedding.shape)
+
+        # self.pos_embedding = nn.Parameter(torch.randn((image_size // patch_size) **2 + 1, dim))
+        # print(self.positions.shape)
+        # return
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
         self.dropout = nn.Dropout(emb_dropout)
 
@@ -151,10 +161,14 @@ class ViT(nn.Module):
     def forward(self, img):
         x = self.to_patch_embedding(img)
         b, n, _ = x.shape
+        # print(b, n, _)
 
         cls_tokens = repeat(self.cls_token, "1 1 d -> b 1 d", b=b)
         x = torch.cat((cls_tokens, x), dim=1)
+        # print(x.shape)
+        # print(self.pos_embedding.shape)
         x += self.pos_embedding[:, : (n + 1)]
+        # x += self.pos_embedding
 
         x = self.dropout(x)
 
