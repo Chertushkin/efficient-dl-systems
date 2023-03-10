@@ -7,6 +7,7 @@ week03_fast_pipelines/homework/section2/wikitext-103-v1.zip
 week03_fast_pipelines/homework/section2/wikitext-103/
 week03_fast_pipelines/homework/section3/data/
 week03_fast_pipelines/homework/section3/log
+week04_distributed/preprocessed_data.pcl
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
