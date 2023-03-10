@@ -9,8 +9,10 @@ from timeit import default_timer
 
 import dataset
 from utils import Settings
-from vit_old import ViT as SubOptimalViT
+from vit import ViT as SubOptimalViT
 from torch.profiler import profile, record_function, ProfilerActivity
+
+EPOCHS = 5
 
 
 def get_vit_model() -> torch.nn.Module:
@@ -32,7 +34,14 @@ def get_train_loader() -> torch.utils.data.DataLoader:
     print(f"Train Data: {len(train_list)}")
     train_transforms = dataset.get_train_transforms()
     train_data = dataset.CatsDogsDataset(train_list, transform=train_transforms)
-    train_loader = DataLoader(dataset=train_data, batch_size=Settings.batch_size, shuffle=True, num_workers=6)
+    train_loader = DataLoader(
+        dataset=train_data,
+        batch_size=Settings.batch_size,
+        shuffle=True,
+        num_workers=6,
+        persistent_workers=True,
+        pin_memory=True,
+    )
 
     return train_loader
 
@@ -55,7 +64,7 @@ def run_epoch(model, train_loader, criterion, optimizer) -> tp.Tuple[float, floa
         # print(acc)
         epoch_accuracy += acc / len(train_loader)
         epoch_loss += loss / len(train_loader)
-        # if i>=2: 
+        # if i>=2:
         #     break
 
     # print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
@@ -68,7 +77,7 @@ def run_epoch_tb(model, train_loader, criterion, optimizer) -> tp.Tuple[float, f
 
     with torch.profiler.profile(
         schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
-        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/vit_pos_2"),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/vit_new_2"),
         record_shapes=True,
         profile_memory=True,
         with_stack=True,
@@ -94,16 +103,19 @@ def run_epoch_tb(model, train_loader, criterion, optimizer) -> tp.Tuple[float, f
 
     return epoch_loss, epoch_accuracy
 
+
 def main():
     model = get_vit_model()
     train_loader = get_train_loader()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Settings.lr)
     start = default_timer()
-    epoch_loss, epoch_accuracy = run_epoch(model, train_loader, criterion, optimizer)
+    for epoch in range(EPOCHS):
+        epoch_loss, epoch_accuracy = run_epoch(model, train_loader, criterion, optimizer)
     end = default_timer()
-    print(f'Took {end - start} seconds...')
-    print(f'{epoch_loss = }, {epoch_accuracy = }')
+    print(f"Took {end - start} seconds...")
+    print(f"{epoch_loss = }, {epoch_accuracy = }")
+
 
 if __name__ == "__main__":
     main()

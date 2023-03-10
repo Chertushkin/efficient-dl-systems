@@ -34,10 +34,10 @@ class FeedForward(nn.Module):
         super().__init__()
         # ╭( -᷅_-᷄ 〝)╮ (done)
         self.net = nn.Sequential(
-            nn.Linear(dim, hidden_dim, bias=True),
+            nn.Linear(dim, hidden_dim),
             nn.GELU(),
             nn.Dropout(dropout),
-            nn.Linear(hidden_dim, dim, bias=True),
+            nn.Linear(hidden_dim, dim),
         )
 
     def forward(self, x):
