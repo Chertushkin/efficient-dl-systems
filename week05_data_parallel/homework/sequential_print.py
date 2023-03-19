@@ -1,6 +1,7 @@
 import os
 
 import torch.distributed as dist
+from functools import partial
 
 
 def run_sequential(rank, size, num_iter=10):
@@ -19,11 +20,17 @@ def run_sequential(rank, size, num_iter=10):
     ```
     """
 
-    pass
+    for i in range(num_iter):
+        funcs = [dist.barrier for i in range(size - 1)]
+        funcs.insert(rank, partial(print, f"Process {rank}"))
+        if rank == size - 1:
+            funcs.append(partial(print, "---"))
+        funcs.append(dist.barrier)
+        for f in funcs:
+            f()
 
 
 if __name__ == "__main__":
     local_rank = int(os.environ["LOCAL_RANK"])
     dist.init_process_group(rank=local_rank, backend="gloo")
-
     run_sequential(local_rank, dist.get_world_size())
