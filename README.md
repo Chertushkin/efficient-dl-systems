@@ -24,12 +24,12 @@ __This branch corresponds to the ongoing 2023 course. If you want to see full ma
   - Seminar: Gradient checkpointing and tensor parallelism in practice.
 - [__Week 7:__](./week07_application_deployment) __Python web application deployment__
   - Lecture/Seminar: Building and deployment of production-ready web services. App & web servers, Docker, Prometheus, API via HTTP and gRPC.
-- __Week 8:__ __Software for serving neural networks__
+- [__Week 8:__](./week08_inference_software) __Software for serving neural networks__
   - Lecture/Seminar: Different formats for packing NN: ONNX, TorchScript, IR. Inference servers: OpenVINO, Triton. ML on client devices: TfJS, ML Kit, Core ML.
 - [__Week 9:__](./week09_compression) __Efficient model inference__
   - Lecture: Efficient Architectures, Knowledge distillation, Pruning, Quantization, Matrices decompositions.
   - Seminar: Quantization in practice.
-- __Week 10:__ __Optimizing the BLOOM inference API__ by Nicolas Patry, ML Engineer at Hugging Face
+- [__Week 10:__](./week10_invited) __Optimizing the BLOOM inference API__ by [Nicolas Patry](https://github.com/Narsil), Hugging Face
 
 ## Grading
 There will be several home assignments (spread over multiple weeks) on the following topics:
